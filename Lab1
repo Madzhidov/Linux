@@ -1,0 +1,131 @@
+#!/bin/sh
+
+#1
+if ! [[ -d $HOME/test/ ]]
+    then mkdir $HOME/test/
+fi
+
+#2
+ls -la //etc | grep '^[d-]' > ~/test/list.log
+
+#3 
+echo 'UnDirect;' >> ~/test/list.log
+ls -al //etc | grep '^[d]' >> ~/test/list.log
+echo 'Quantity;' >> echo >> ~/test/list.log
+ls -al //etc | grep -c '^[d]' >> ~/test/list.log
+echo 'Hidden Files;' >> ~/test/list.log
+find . -maxdepth 1 -type f | grep '^\./\.' >> ~/test/list.log
+echo 'Quantity;' >> echo >> ~/test/list.log
+find . -maxdepth 1 -type f | grep '^\./\.' | wc -l >> ~/test/list.log
+
+#4
+if ! [[ -d $HOME/test/links ]] 
+then mkdir $HOME/test/links 
+fi 
+
+#5 
+if ! [ -e $HOME/test/links/list_hlink ]
+then 
+    ln $HOME/test/list.log $HOME/test/links/list_hlink
+fi
+
+#6
+if ! [ -e $HOME/test/links/list_slink ] 
+then
+    ln -s $HOME/test/list.log $HOME/test/links/list_slink
+fi
+
+#7 
+echo "Number of hard links to list_hlink"
+ls -il $HOME/test/links/list_hlink | grep "list_hlink" | awk {'print $3'}
+echo "Number of hard links to list.log" 
+ls -il $HOME/test/list.log | grep "list.log" | awk {'print $3'} 
+echo "Number of hard links to list_slink" 
+ls -il $HOME/test/links/list_slink | grep "list_slink" | awk {'print $3'} 
+
+#8 
+wc -l $HOME/test/links/list_hlink >> $HOME/test/links/list_hlink 
+
+#9
+cmp $HOME/test/links/list_hlink $HOME/test/links/list_slink && echo "yes" || echo "no"
+
+#10 
+mv $HOME/test/list.log list1.log
+
+#11 
+cmp $HOME/test/links/list_hlink $HOME/test/links/list_slink && echo "yes" || echo "no"
+
+#12
+if ! [ -e $HOME/list1 ] 
+then
+ln $HOME/test/links/list_hlink $HOME/list1
+fi 
+
+#13
+find /etc -name "*.conf" -type f > $HOME/list_conf
+
+#14
+find /etc -name "*.d" -type d > $HOME/list_d
+
+#15 
+cat $HOME/list_conf $HOME/list_d > $HOME/list_conf_d
+
+#16
+if ! [[ -d $HOME/test/.sub ]] 
+then mkdir $HOME/test/.sub
+fi
+
+#17
+cp $HOME/list_conf_d $HOME/test/.sub/list_conf_d
+
+#18
+cp --backup $HOME/list_conf_d $HOME/test/.sub/list_conf_d
+
+#19
+find $HOME/test
+
+#20
+man man > $HOME/man.txt
+
+#21
+split -b 1k -d $HOME/man.txt
+
+#22
+if ! [[ -d $HOME/man.dir ]] 
+then mkdir $HOME/man.dir
+fi
+
+#23
+for i in $( ls $HOME/ | grep 'x[0-9][0-9]' );
+do mv $i $HOME/man.dir/; 
+done; 
+
+#24
+cp /dev/null $HOME/man.dir/man.txt
+for i in $( ls $HOME/man.dir | grep 'x[0-9][0-9]' ); 
+do 
+cat $HOME/man.dir/$i >> $HOME/man.dir/man.txt; 
+done; 
+
+#25
+cmp $HOME/man.dir/man.txt $HOME/man.txt && echo "yes" || echo "no"
+
+#26
+echo "-_-" > $HOME/tempman.txt
+cat $HOME/tempman.txt $HOME/man.txt > $HOME/temp.txt
+cat $HOME/temp.txt > $HOME/man.txt
+rm -rf $HOME/temp.txt
+rm -rf $HOME/tempman.txt
+echo "o_0" >> $HOME/man.txt
+
+#27 
+diff $HOME/man.txt $HOME/man.dir/man.txt > $HOME/different
+
+#28 
+mv $HOME/different $HOME/man.dir/different
+
+#29
+patch $HOME/man.dir/man.txt -i $HOME/man.dir/different -R
+
+#30
+cmp $HOME/man.dir/man.txt $HOME/man.txt && echo "yes" || echo "no" 
