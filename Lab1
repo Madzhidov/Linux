@@ -129,3 +129,14 @@ patch $HOME/man.dir/man.txt -i $HOME/man.dir/different -R
 
 #30
 cmp $HOME/man.dir/man.txt $HOME/man.txt && echo "yes" || echo "no" 
+
+
+
+
+
+
+
+
+
+
+
